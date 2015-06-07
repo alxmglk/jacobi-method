@@ -6,6 +6,10 @@
 
 class LinearEquationSystemFactory
 {
+private:
+	bool IsDiagonallyDominant(LinearEquationSystem* s);
+	NUMBER GetRandomCoefficient();
+
 public:
     LinearEquationSystem* Create(int n);
 };
