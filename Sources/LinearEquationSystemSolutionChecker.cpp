@@ -17,7 +17,7 @@ bool LinearEquationSystemSolutionChecker::IsCorrectSolution(LinearEquationSystem
 			freeTerm -= matrix[row][column] * solution[column];
 		}
 
-		if (abs(freeTerm) > precision)
+		if (ABS(freeTerm) > precision)
 		{
  			correct = false;
 			break;
