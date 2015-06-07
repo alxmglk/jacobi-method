@@ -25,3 +25,13 @@ void MPICommunicator::Broadcast(void* buffer, int count, MPI_Datatype type, int 
 {
 	MPI_Bcast(buffer, count, type, root, id);
 }
+
+void MPICommunicator::Reduce(const void* sendBuffer, void* recvBuffer, int count, MPI_Datatype type, MPI_Op operation, int root)
+{
+	MPI_Reduce(sendBuffer, recvBuffer, count, type, operation, root, id);
+}
+
+void MPICommunicator::AllReduce(const void* sendBuffer, void* recvBuffer, int count, MPI_Datatype type, MPI_Op operation)
+{
+	MPI_Allreduce(sendBuffer, recvBuffer, count, type, operation, id);
+}
