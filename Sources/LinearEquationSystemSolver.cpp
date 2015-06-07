@@ -2,7 +2,7 @@
 
 void LinearEquationSystemSolver::Solve(LinearEquationSystem* system, NUMBER* solution)
 {
-	double accuracy = 0.001;
+	double accuracy = 0.0000001;
 	int n = system->N;
 	NUMBER** matrix = system->AugmentedMatrix;
 	int rowsCount = system->RowsCount;
