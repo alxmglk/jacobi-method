@@ -13,20 +13,18 @@ void LinearEquationSystemSolver::Solve(LinearEquationSystem* system, NUMBER* sol
 	int rowsCount = system->RowsCount;
 	int freeTermIndex = system->FreeTermIndex;
 
-	NUMBER* newSolution = new NUMBER[n];
-
 	for (int i = 0; i < n; ++i)
 	{
 		solution[i] = 0;
 	}
 
 	int packedElementsCount = system->RowType->ElementsCount / K;
-	NUMBER maxDivergence;
-	int solutionSize = n * sizeof(NUMBER);
+	NUMBER* localSolution = new NUMBER[rowsCount];
+	NUMBER globalMaxDivergence = 0;
 
 	do
 	{
-		maxDivergence = -FLT_MAX;
+		NUMBER localMaxDivergence = -FLT_MAX;
 
 		for (int row = 0; row < rowsCount; row++)
 		{
@@ -40,7 +38,7 @@ void LinearEquationSystemSolver::Solve(LinearEquationSystem* system, NUMBER* sol
 			}
 
 			NUMBER* sumArray = (NUMBER*)&pSum;
-			
+
 			NUMBER sum = 0;
 			for (int i = 0; i < K; ++i)
 			{
@@ -49,17 +47,19 @@ void LinearEquationSystemSolver::Solve(LinearEquationSystem* system, NUMBER* sol
 
 			sum -= matrix[row][row] * solution[row];
 
-			newSolution[row] = (matrix[row][freeTermIndex] - sum) / matrix[row][row];
+			localSolution[row] = (matrix[row][freeTermIndex] - sum) / matrix[row][row];
 
-			NUMBER divergence = ABS(solution[row] - newSolution[row]);
-			if (divergence > maxDivergence)
+			NUMBER divergence = ABS(solution[row] - localSolution[row]);
+			if (divergence > localMaxDivergence)
 			{
-				maxDivergence = divergence;
+				localMaxDivergence = divergence;
 			}
 		}
 
-		memcpy(solution, newSolution, solutionSize);
-	} while (maxDivergence > accuracy);
+		communicator.AllGather(localSolution, rowsCount, solution, MPI_NUMBER);
+		communicator.AllReduce(&localMaxDivergence, &globalMaxDivergence, 1, MPI_NUMBER, MPI_MAX);		
 
-	delete[]newSolution;
+	} while (globalMaxDivergence > accuracy);
+
+	delete[]localSolution;
 }

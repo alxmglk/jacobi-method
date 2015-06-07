@@ -16,7 +16,7 @@ LinearEquationSystemSolutionChecker checker;
 int n = 32;
 const int nLimit = 4096 * 2;
 const int multiplier = 2;
-const int repeatsNumber = 1;
+const int repeatsNumber = 3;
 
 int main(int argc, char* argv[])
 {
@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 			LinearEquationSystem* system = factory.Create(n);
 			NUMBER* solution = (NUMBER*)_aligned_malloc(n * sizeof(NUMBER), 16);
 
-			stopwatch.Start();			
+			stopwatch.Start();
 			solver.Solve(system, solution);
 			stopwatch.Stop();
 
@@ -43,13 +43,18 @@ int main(int argc, char* argv[])
 				minTime = elapsedSeconds;
 			}
 
-			bool result = checker.IsCorrectSolution(system, solution);
-			printf("Correct: %s \n", result ? "yes" : "no");
+			communicator.Barrier();
+
+			/*bool result = checker.IsCorrectSolution(system, solution);
+			printf("Correct: %s \n", result ? "yes" : "no");*/
 
 			delete system;
 			_aligned_free(solution);
 		}
 
-		printf("N = %d, Elapsed seconds: %f\n", n, minTime);
+		if (context.IsMaster())
+		{
+			printf("N = %d, Elapsed seconds: %f\n", n, minTime);
+		}
 	}
 }
