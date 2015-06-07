@@ -1,4 +1,5 @@
 #include "LinearEquationSystem.h"
+#include <stdio.h>
 
 LinearEquationSystem::LinearEquationSystem(int n) : LinearEquationSystem(n, n)
 {
@@ -27,4 +28,19 @@ LinearEquationSystem::~LinearEquationSystem()
 	}	
 
 	free(AugmentedMatrix);
+}
+
+void LinearEquationSystem::Print()
+{
+	printf("Matrix: \n");
+
+	for (int i = 0; i < RowsCount; ++i)
+	{
+		for (int j = 0; j < ColumnsCount; ++j)
+		{
+			printf("%f ", AugmentedMatrix[i][j]);
+		}
+
+		printf("\n");
+	}
 }

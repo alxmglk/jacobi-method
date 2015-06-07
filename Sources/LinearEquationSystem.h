@@ -14,4 +14,6 @@ public:
 	LinearEquationSystem(int n);
 	LinearEquationSystem(int n, int rowsCount);
 	~LinearEquationSystem();
+
+	void Print();
 };
