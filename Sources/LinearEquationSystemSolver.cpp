@@ -9,51 +9,45 @@ void LinearEquationSystemSolver::Solve(LinearEquationSystem* system, NUMBER* sol
 	int freeTermIndex = system->FreeTermIndex;
 
 	NUMBER* newSolution = new NUMBER[n];
-	
+
 	for (int i = 0; i < n; ++i)
 	{
-		solution[i] = 1;
+		solution[i] = 0;
 	}
 
-	double norm;
+	NUMBER maxDivergence;
+	int solutionSize = n * sizeof(NUMBER);
 
-	do 
+	do
 	{
+		maxDivergence = -DBL_MAX;
+
 		#pragma omp parallel for if (rowsCount > 128)
-		for (int row = 0; row < rowsCount; row++) 
+		for (int row = 0; row < rowsCount; row++)
 		{
-			NUMBER freeTerm = matrix[row][freeTermIndex];
-			
-			newSolution[row] = freeTerm;
+			NUMBER x = matrix[row][freeTermIndex];
 
 			for (int column = 0; column < n; column++)
 			{
-				if (row == column)
+				if (row != column)
 				{
-					continue;
+					x -= matrix[row][column] * solution[column];
 				}
-
-				newSolution[row] -= matrix[row][column] * solution[column];				
 			}
 
-			newSolution[row] /= matrix[row][row];
-		}
+			x /= matrix[row][row];
 
-		norm = ABS(solution[0] - newSolution[0]);
+			newSolution[row] = x;
 
-		for (int column = 0; column < n; column++) 
-		{
-			NUMBER difference = ABS(solution[column] - newSolution[column]);
-
-			if (difference > norm)
+			NUMBER divergence = ABS(solution[row] - newSolution[row]);
+			if (divergence > maxDivergence)
 			{
-				norm = difference;
+				maxDivergence = divergence;
 			}
-
-			solution[column] = newSolution[column];
 		}
-	} 
-	while (norm > accuracy);
 
-	delete []newSolution;
+		memcpy(solution, newSolution, solutionSize);
+	} while (maxDivergence > accuracy);
+
+	delete[]newSolution;
 }
