@@ -1,0 +1,14 @@
+Debug/
+ipch/
+*.user
+*.suo
+*.mdf
+*.sdf
+*.log
+*.opensdf
+*.obj
+*.tlog
+*.pch
+*.pdb
+*.idb
+
