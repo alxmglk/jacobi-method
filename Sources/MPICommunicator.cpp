@@ -21,6 +21,11 @@ void MPICommunicator::Gather(const void* sendBuffer, int sendCount, void* recvBu
 	MPI_Gather(sendBuffer, sendCount, sendType, recvBuffer, sendCount, sendType, context.MasterProcessRank, id);
 }
 
+void MPICommunicator::AllGather(const void* sendBuffer, int sendCount, void* recvBuffer, MPI_Datatype sendType)
+{
+	MPI_Allgather(sendBuffer, sendCount, sendType, recvBuffer, sendCount, sendType, id);
+}
+
 void MPICommunicator::Broadcast(void* buffer, int count, MPI_Datatype type, int root)
 {
 	MPI_Bcast(buffer, count, type, root, id);
