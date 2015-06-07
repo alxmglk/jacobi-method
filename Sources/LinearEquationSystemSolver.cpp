@@ -23,6 +23,7 @@ void LinearEquationSystemSolver::Solve(LinearEquationSystem* system, NUMBER* sol
 	{
 		maxDivergence = -FLT_MAX;
 
+		#pragma omp parallel for if (rowsCount > 128)
 		for (int row = 0; row < rowsCount; row++)
 		{
 			PARRAY pSum = SET1(0);
