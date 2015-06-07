@@ -1,6 +1,6 @@
 #pragma once
 #include <math.h>
 
-typedef float NUMBER;
+typedef double NUMBER;
 
 #define ABS fabs
