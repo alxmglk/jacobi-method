@@ -1,6 +1,4 @@
 #include "LinearEquationSystem.h"
-#include <stdio.h>
-#include <memory.h>
 
 LinearEquationSystem::LinearEquationSystem(int n) : LinearEquationSystem(n, n)
 {
@@ -8,32 +6,28 @@ LinearEquationSystem::LinearEquationSystem(int n) : LinearEquationSystem(n, n)
 
 LinearEquationSystem::LinearEquationSystem(int n, int rowsCount)
 {
+	RowType = new MPIRowType(n);
 	N = n;
 	RowsCount = rowsCount;
 	ColumnsCount = n + 1;
 	FreeTermIndex = n;
 
+	NUMBER* data = (NUMBER*)_aligned_malloc(RowsCount * RowType->Size, 16);
 	AugmentedMatrix = (NUMBER**)malloc(RowsCount * sizeof(NUMBER*));
-
-	int buffer = (ColumnsCount % K == 0) ? 0 : (K - ColumnsCount % K);
-	ColumnsCountWithBuffer = ColumnsCount + buffer;
 
 	for (int row = 0; row < RowsCount; ++row)
 	{
-		AugmentedMatrix[row] = (NUMBER*)_aligned_malloc(ColumnsCountWithBuffer * sizeof(NUMBER), 16);
+		AugmentedMatrix[row] = &(data[row * RowType->ElementsCount]);
 
-		memset(AugmentedMatrix[row], 0, ColumnsCountWithBuffer * sizeof(NUMBER));
+		memset(AugmentedMatrix[row], 0, RowType->Size);
 	}
 }
 
 LinearEquationSystem::~LinearEquationSystem()
 {
-	for (int row = 0; row < RowsCount; ++row)
-	{
-		_aligned_free(AugmentedMatrix[row]);
-	}	
-
+	_aligned_free(AugmentedMatrix[0]);
 	free(AugmentedMatrix);
+	delete RowType;
 }
 
 void LinearEquationSystem::Print()

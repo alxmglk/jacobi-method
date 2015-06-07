@@ -1,5 +1,11 @@
 #include "LinearEquationSystemFactory.h"
 
+LinearEquationSystemFactory::LinearEquationSystemFactory(MPIContext& mpiContext, MPICommunicator& mpiCommunicator)
+	: context(mpiContext), communicator(mpiCommunicator)
+{
+
+}
+
 bool LinearEquationSystemFactory::IsDiagonallyDominant(LinearEquationSystem* s)
 {
 	bool result = true;
@@ -37,8 +43,24 @@ NUMBER LinearEquationSystemFactory::GetRandomCoefficient()
 
 LinearEquationSystem* LinearEquationSystemFactory::Create(int n)
 {
-	LinearEquationSystem* system = new LinearEquationSystem(n);
+	int rowsPerProcess = n / context.NumberOfProcesses;
+	LinearEquationSystem* system = new LinearEquationSystem(n);;
+	LinearEquationSystem* partialSystem = new LinearEquationSystem(n, rowsPerProcess);
 
+	if (context.IsMaster())
+	{
+		Fill(system);
+	}
+
+	communicator.Scatter(system->AugmentedMatrix[0], rowsPerProcess, partialSystem->AugmentedMatrix[0], partialSystem->RowType->Type);
+
+	delete system;
+
+	return partialSystem;
+}
+
+void LinearEquationSystemFactory::Fill(LinearEquationSystem* system)
+{
 	NUMBER** matrix = system->AugmentedMatrix;
 
 	srand(time(nullptr));
@@ -65,6 +87,4 @@ LinearEquationSystem* LinearEquationSystemFactory::Create(int n)
 		matrix[row][row] = value;
 		matrix[row][column] = freeTerm;
 	}
-
-	return system;
 }

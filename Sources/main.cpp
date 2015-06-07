@@ -7,6 +7,8 @@
 #include "LinearEquationSystemSolver.h"
 #include "LinearEquationSystemSolutionChecker.h"
 #include "LinearEquationSystemFactory.h"
+#include "MPIContext.h"
+#include "MPICommunicator.h"
 
 Stopwatch stopwatch;
 LinearEquationSystemSolutionChecker checker;
@@ -18,8 +20,10 @@ const int repeatsNumber = 1;
 
 int main(int argc, char* argv[])
 {
-	LinearEquationSystemFactory factory;
-	LinearEquationSystemSolver solver;
+	MPIContext context(&argc, &argv);
+	MPICommunicator communicator(context, MPI_COMM_WORLD);
+	LinearEquationSystemFactory factory(context, communicator);
+	LinearEquationSystemSolver solver(context, communicator);
 
 	for (; n <= nLimit; n *= multiplier)
 	{
@@ -28,8 +32,6 @@ int main(int argc, char* argv[])
 		{
 			LinearEquationSystem* system = factory.Create(n);
 			NUMBER* solution = (NUMBER*)_aligned_malloc(n * sizeof(NUMBER), 16);
-
-			//system->Print();
 
 			stopwatch.Start();			
 			solver.Solve(system, solution);

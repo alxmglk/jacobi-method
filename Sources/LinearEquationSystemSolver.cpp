@@ -1,5 +1,10 @@
 #include "LinearEquationSystemSolver.h"
 
+LinearEquationSystemSolver::LinearEquationSystemSolver(MPIContext& mpiContext, MPICommunicator& mpiCommunicator)
+	: context(mpiContext), communicator(mpiCommunicator)
+{
+}
+
 void LinearEquationSystemSolver::Solve(LinearEquationSystem* system, NUMBER* solution)
 {
 	double accuracy = 0.0000001;
@@ -15,7 +20,7 @@ void LinearEquationSystemSolver::Solve(LinearEquationSystem* system, NUMBER* sol
 		solution[i] = 0;
 	}
 
-	int packedElementsCount = system->ColumnsCountWithBuffer / K;
+	int packedElementsCount = system->RowType->ElementsCount / K;
 	NUMBER maxDivergence;
 	int solutionSize = n * sizeof(NUMBER);
 

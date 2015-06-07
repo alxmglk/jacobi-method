@@ -3,6 +3,8 @@
 
 typedef double NUMBER;
 
+#define MPI_NUMBER MPI_DOUBLE
+
 #define ABS fabs
 #define PARRAY __m128d
 #define SET1 _mm_set1_pd
