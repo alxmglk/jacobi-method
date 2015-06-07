@@ -27,7 +27,9 @@ int main(int argc, char* argv[])
 		for (int attempt = 0; attempt < repeatsNumber; ++attempt)
 		{
 			LinearEquationSystem* system = factory.Create(n);
-			NUMBER* solution = new NUMBER[n];
+			NUMBER* solution = (NUMBER*)_aligned_malloc(n * sizeof(NUMBER), 16);
+
+			//system->Print();
 
 			stopwatch.Start();			
 			solver.Solve(system, solution);
@@ -43,7 +45,7 @@ int main(int argc, char* argv[])
 			printf("Correct: %s \n", result ? "yes" : "no");
 
 			delete system;
-			delete []solution;
+			_aligned_free(solution);
 		}
 
 		printf("N = %d, Elapsed seconds: %f\n", n, minTime);

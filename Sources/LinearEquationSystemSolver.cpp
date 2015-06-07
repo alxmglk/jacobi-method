@@ -15,28 +15,36 @@ void LinearEquationSystemSolver::Solve(LinearEquationSystem* system, NUMBER* sol
 		solution[i] = 0;
 	}
 
-	NUMBER maxDivergence = 0;
+	int packedElementsCount = system->ColumnsCountWithBuffer / K;
+	NUMBER maxDivergence;
 	int solutionSize = n * sizeof(NUMBER);
 
 	do
 	{
-		maxDivergence = -DBL_MAX;
+		maxDivergence = -FLT_MAX;
 
 		for (int row = 0; row < rowsCount; row++)
 		{
-			NUMBER x = matrix[row][freeTermIndex];
+			PARRAY pSum = SET1(0);
+			PARRAY* pRow = (PARRAY*)matrix[row];
+			PARRAY* pSolution = (PARRAY*)solution;
 
-			for (int column = 0; column < n; column++)
+			for (int k = 0; k < packedElementsCount; k++)
 			{
-				if (row != column)
-				{
-					x -= matrix[row][column] * solution[column];
-				}
+				pSum = ADD(pSum, MUL(pRow[k], pSolution[k]));
 			}
 
-			x /= matrix[row][row];
+			NUMBER* sumArray = (NUMBER*)&pSum;
+			
+			NUMBER sum = 0;
+			for (int i = 0; i < K; ++i)
+			{
+				sum += sumArray[i];
+			}
 
-			newSolution[row] = x;
+			sum -= matrix[row][row] * solution[row];
+
+			newSolution[row] = (matrix[row][freeTermIndex] - sum) / matrix[row][row];
 
 			NUMBER divergence = ABS(solution[row] - newSolution[row]);
 			if (divergence > maxDivergence)

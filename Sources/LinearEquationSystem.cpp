@@ -1,5 +1,6 @@
 #include "LinearEquationSystem.h"
 #include <stdio.h>
+#include <memory.h>
 
 LinearEquationSystem::LinearEquationSystem(int n) : LinearEquationSystem(n, n)
 {
@@ -14,9 +15,14 @@ LinearEquationSystem::LinearEquationSystem(int n, int rowsCount)
 
 	AugmentedMatrix = (NUMBER**)malloc(RowsCount * sizeof(NUMBER*));
 
+	int buffer = (ColumnsCount % K == 0) ? 0 : (K - ColumnsCount % K);
+	ColumnsCountWithBuffer = ColumnsCount + buffer;
+
 	for (int row = 0; row < RowsCount; ++row)
 	{
-		AugmentedMatrix[row] = (NUMBER*)_aligned_malloc(ColumnsCount * sizeof(NUMBER), 16);
+		AugmentedMatrix[row] = (NUMBER*)_aligned_malloc(ColumnsCountWithBuffer * sizeof(NUMBER), 16);
+
+		memset(AugmentedMatrix[row], 0, ColumnsCountWithBuffer * sizeof(NUMBER));
 	}
 }
 

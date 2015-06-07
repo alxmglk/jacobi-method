@@ -10,6 +10,7 @@ public:
 	int RowsCount;
 	int ColumnsCount;
 	int FreeTermIndex;
+	int ColumnsCountWithBuffer;
 
 	LinearEquationSystem(int n);
 	LinearEquationSystem(int n, int rowsCount);
