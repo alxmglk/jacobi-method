@@ -19,6 +19,7 @@ void LinearEquationSystemSolver::Solve(LinearEquationSystem* system, NUMBER* sol
 
 	do 
 	{
+		#pragma omp parallel for if (rowsCount > 128)
 		for (int row = 0; row < rowsCount; row++) 
 		{
 			NUMBER freeTerm = matrix[row][freeTermIndex];

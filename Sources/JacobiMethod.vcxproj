@@ -74,6 +74,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(MSMPI_INC);$(MSMPI_INC)\x86</AdditionalIncludeDirectories>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
