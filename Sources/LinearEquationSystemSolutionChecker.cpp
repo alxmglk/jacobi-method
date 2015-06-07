@@ -5,24 +5,14 @@ bool LinearEquationSystemSolutionChecker::IsCorrectSolution(LinearEquationSystem
 	NUMBER precision = 0.001f;
 	bool correct = true;
 
-	NUMBER** matrix = system->AugmentedMatrix;
-	int freeTermColumn = system->ColumnsCount - 1;
-
-	for (int row = 0; row < system->RowsCount; ++row)
+	for (int i = 0; i < system->N; ++i)
 	{
-		NUMBER freeTerm = matrix[row][freeTermColumn];
-
-		for (int column = 0; column < freeTermColumn; ++column)
+		if (ABS(solution[i] - i) > precision)
 		{
-			freeTerm -= matrix[row][column] * solution[column];
-		}
-
-		if (ABS(freeTerm) > precision)
-		{
- 			correct = false;
+			correct = false;
 			break;
 		}
 	}
-
+	
 	return correct;
 }
