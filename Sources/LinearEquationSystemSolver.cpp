@@ -10,6 +10,11 @@ void LinearEquationSystemSolver::Solve(LinearEquationSystem* system, NUMBER* sol
 
 	NUMBER* newSolution = new NUMBER[n];
 	
+	for (int i = 0; i < n; ++i)
+	{
+		solution[i] = 1;
+	}
+
 	double norm;
 
 	do 
