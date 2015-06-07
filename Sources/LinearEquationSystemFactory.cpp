@@ -38,7 +38,7 @@ NUMBER LinearEquationSystemFactory::GetRandomCoefficient()
 LinearEquationSystem* LinearEquationSystemFactory::Create(int n)
 {
 	LinearEquationSystem* system = new LinearEquationSystem(n);
-		
+
 	NUMBER** matrix = system->AugmentedMatrix;
 
 	srand(time(nullptr));
@@ -46,27 +46,25 @@ LinearEquationSystem* LinearEquationSystemFactory::Create(int n)
 	for (int row = 0; row < system->RowsCount; ++row)
 	{
 		NUMBER freeTerm = 0;
-		NUMBER sum = 0;
 
 		int column = 0;
 		for (; column < system->ColumnsCount - 1; ++column)
 		{
-			NUMBER value = GetRandomCoefficient();
-
 			if (column != row)
 			{
-				sum += value;
+				NUMBER value = GetRandomCoefficient();
+
 				matrix[row][column] = value;
 				freeTerm += value * column;
 			}
 		}
 
-		NUMBER value = sum + GetRandomCoefficient();
-		matrix[row][row] = value;
+		NUMBER value = freeTerm + GetRandomCoefficient();
 		freeTerm += value * row;
 
+		matrix[row][row] = value;
 		matrix[row][column] = freeTerm;
 	}
-		
+
 	return system;
 }
